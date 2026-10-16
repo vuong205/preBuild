@@ -1,6 +1,8 @@
 name: Auto Build ALL REPO
 on:
   push: 
+    branches:
+      - mainBuild
     paths:
      - 'SYNC_REPO.txt'
 
