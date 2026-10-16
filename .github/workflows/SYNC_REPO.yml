@@ -1,0 +1,81 @@
+name: Auto Build ALL REPO
+on:
+  push: 
+    paths:
+     - 'SYNC_REPO.txt'
+
+#concurrency:
+#  group: ${{ github.workflow }}-${{ github.ref }}
+#  cancel-in-progress: true
+  
+jobs:
+  sync:
+    runs-on: xcode-27 
+    steps:
+      - name: Checkout source repo 1
+        uses: actions/checkout@v4
+        with:          
+          fetch-depth: 1
+          token: ${{ secrets.SYNC_TOKEN }}
+      
+      - name: Get repo to sync
+        id: get_repo
+        run: |
+          if [ ! -f "SYNC_REPO.txt" ]; then
+            echo "::error::File SYNC_REPO.txt not found!"
+            exit 1
+          fi
+
+          REPO_INDEX=$(head -n 1 SYNC_REPO.txt | tr -d '\r\n ')
+
+          if [ -z "$REPO_INDEX" ]; then
+            echo "::error::SYNC_REPO.txt is empty!"
+            exit 1
+          fi
+
+          if ! [[ "$REPO_INDEX" =~ ^[0-9]+$ ]]; then
+            echo "::error::SYNC_REPO.txt must only contain an integer! Found: '$REPO_INDEX'"
+            exit 1
+          fi
+
+          echo "REPO_INDEX=$REPO_INDEX" >> "$GITHUB_ENV"
+          echo "repo_index=$REPO_INDEX" >> "$GITHUB_OUTPUT"
+          echo "Target REPO_INDEX: $REPO_INDEX"
+
+      - name: Check repo secret exists
+        env:
+          IS_EMPTY: ${{ secrets[format('REPO_{0}', env.REPO_INDEX)] == '' }}
+        if: env.IS_EMPTY == 'true'
+        run: |
+          echo "::error::Secret 'REPO_${REPO_INDEX}' không tồn tại hoặc bị rỗng!"
+          exit 1
+
+      - name: Checkout source repo 2
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets[format('REPO_{0}', env.REPO_INDEX)] }}
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: upstream-repo2
+          ref: main
+          fetch-depth: 1
+          
+      - name: Run sync script step 1
+        env:
+          isStep1: "true"
+        run: bash upstream-repo2/scripts/sync.sh > /dev/null 2>&1
+        
+      - name: Checkout source repo 3
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.UPLOAD_STEP1 }}
+          token: ${{ secrets.UPLOAD_TOKEN }}
+          path: upstream-repo3
+          ref: main
+          fetch-depth: 1
+          sparse-checkout: upstream
+          sparse-checkout-cone-mode: false
+
+      - name: Run sync script step 2
+        env:
+          isStep1: "false"
+        run: bash upstream-repo2/scripts/sync.sh > /dev/null 2>&1
