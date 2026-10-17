@@ -44,19 +44,28 @@ jobs:
           echo "repo_index=$REPO_INDEX" >> "$GITHUB_OUTPUT"
           echo "Target REPO_INDEX: $REPO_INDEX"
 
-      - name: Check repo secret exists
+      - name: Check repo secret REPO exists
         env:
-          IS_EMPTY: ${{ secrets[format('REPO_{0}', env.REPO_INDEX)] == '' }}
-        if: env.IS_EMPTY == 'true'
+          IS_EMPTY_REPO: ${{ secrets[format('REPO_{0}', env.REPO_INDEX)] == '' }}
+        if: env.IS_EMPTY_REPO == 'true'
         run: |
           echo "::error::Secret 'REPO_${REPO_INDEX}' không tồn tại hoặc bị rỗng!"
           exit 1
+      
 
+      - name: Check repo secret REPO TOKEN exists
+        env:
+          IS_EMPTY_REPO_TOKEN: ${{ secrets[format('REPO_{0}_TOKEN', env.REPO_INDEX)] == '' }}
+        if: env.IS_EMPTY_REPO_TOKEN == 'true'
+        run: |
+          echo "::error::Secret 'REPO_${REPO_INDEX}_TOKEN' không tồn tại hoặc bị rỗng!"
+          echo "HAS_REPO_TOKEN=true" >> $GITHUB_ENV
+          
       - name: Checkout source repo 2
         uses: actions/checkout@v4
         with:
           repository: ${{ secrets[format('REPO_{0}', env.REPO_INDEX)] }}
-          token: ${{ secrets.SYNC_TOKEN }}
+          token: ${{ env.HAS_REPO_TOKEN == 'true' && secrets[format('REPO_{0}_TOKEN', env.REPO_INDEX)] || secrets.SYNC_TOKEN }}
           path: upstream-repo2
           ref: main
           fetch-depth: 1
