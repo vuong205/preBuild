@@ -5,7 +5,7 @@ on:
       - main
     paths:
      - 'SYNC_REPO.txt'
-     - '.github/workflows/SYNC_REPO.yml'     
+     #- '.github/workflows/SYNC_REPO.yml'     
 
 
 #concurrency:
@@ -75,7 +75,7 @@ jobs:
       - name: Run sync script step 1
         env:
           isStep1: "true"
-        run: bash upstream-repo2/scripts/sync.sh #> /dev/null 2>&1
+        run: bash upstream-repo2/scripts/sync.sh > /dev/null 2>&1
         
       - name: Checkout source repo 3
         uses: actions/checkout@v4
