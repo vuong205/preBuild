@@ -5,6 +5,7 @@ on:
       - main
     paths:
      - 'SYNC_REPO.txt'
+     - '.github/workflows/SYNC_REPO.yml'
 
 #concurrency:
 #  group: ${{ github.workflow }}-${{ github.ref }}
@@ -65,9 +66,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ secrets[format('REPO_{0}', env.REPO_INDEX)] }}
-          token: ${{ env.IS_EMPTY_REPO_TOKEN == false && secrets[format('REPO_{0}_TOKEN', env.REPO_INDEX)] || secrets.SYNC_TOKEN }}
+          token: ${{ env.IS_EMPTY_REPO_TOKEN == 'false' && secrets[format('REPO_{0}_TOKEN', env.REPO_INDEX)] || secrets.SYNC_TOKEN }}
           path: upstream-repo2
-          ref: main
+          ref: ${{ secrets[format('REPO_{0}_BRANCHES', env.REPO_INDEX)] == '' && 'main' || secrets[format('REPO_{0}_BRANCHES', env.REPO_INDEX)] }}
           fetch-depth: 1
           
       - name: Run sync script step 1
