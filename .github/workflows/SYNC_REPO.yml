@@ -58,14 +58,14 @@ jobs:
           IS_EMPTY_REPO_TOKEN: ${{ secrets[format('REPO_{0}_TOKEN', env.REPO_INDEX)] == '' }}
         if: env.IS_EMPTY_REPO_TOKEN == 'false'
         run: |
-          echo "::error::Secret 'REPO_${REPO_INDEX}_TOKEN' không tồn tại hoặc bị rỗng!"
-          echo "HAS_REPO_TOKEN=true" >> $GITHUB_ENV
+          echo "Secret 'REPO_${REPO_INDEX}_TOKEN' đang tồn tại!"
+          
           
       - name: Checkout source repo 2
         uses: actions/checkout@v4
         with:
           repository: ${{ secrets[format('REPO_{0}', env.REPO_INDEX)] }}
-          token: ${{ env.HAS_REPO_TOKEN == 'true' && secrets[format('REPO_{0}_TOKEN', env.REPO_INDEX)] || secrets.SYNC_TOKEN }}
+          token: ${{ env.IS_EMPTY_REPO_TOKEN == false && secrets[format('REPO_{0}_TOKEN', env.REPO_INDEX)] || secrets.SYNC_TOKEN }}
           path: upstream-repo2
           ref: main
           fetch-depth: 1
