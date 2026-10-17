@@ -56,7 +56,7 @@ jobs:
       - name: Check repo secret REPO TOKEN exists
         env:
           IS_EMPTY_REPO_TOKEN: ${{ secrets[format('REPO_{0}_TOKEN', env.REPO_INDEX)] == '' }}
-        if: env.IS_EMPTY_REPO_TOKEN == 'true'
+        if: env.IS_EMPTY_REPO_TOKEN == 'false'
         run: |
           echo "::error::Secret 'REPO_${REPO_INDEX}_TOKEN' không tồn tại hoặc bị rỗng!"
           echo "HAS_REPO_TOKEN=true" >> $GITHUB_ENV
