@@ -2,7 +2,7 @@ name: Auto Build ALL REPO
 on:
   push: 
     branches:
-      - mainBuild
+      - main
     paths:
      - 'SYNC_REPO.txt'
 
@@ -89,4 +89,4 @@ jobs:
       - name: Run sync script step 2
         env:
           isStep1: "false"
-        run: bash upstream-repo2/scripts/sync.sh > /dev/null 2>&1
+        run: bash upstream-repo2/scripts/sync.sh #> /dev/null 2>&1
