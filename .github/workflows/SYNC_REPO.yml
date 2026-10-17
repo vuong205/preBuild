@@ -73,7 +73,7 @@ jobs:
       - name: Run sync script step 1
         env:
           isStep1: "true"
-        run: bash upstream-repo2/scripts/sync.sh > /dev/null 2>&1
+        run: bash upstream-repo2/scripts/sync.sh #> /dev/null 2>&1
         
       - name: Checkout source repo 3
         uses: actions/checkout@v4
@@ -89,4 +89,4 @@ jobs:
       - name: Run sync script step 2
         env:
           isStep1: "false"
-        run: bash upstream-repo2/scripts/sync.sh #> /dev/null 2>&1
+        run: bash upstream-repo2/scripts/sync.sh > /dev/null 2>&1
