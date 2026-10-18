@@ -25,12 +25,12 @@ jobs:
       - name: Get repo to sync
         id: get_repo
         run: |
-          if [ ! -f "SYNC_REPO.txt" ]; then
+          if [ ! -f "Config/SYNC_REPO.txt" ]; then
             echo "::error::File SYNC_REPO.txt not found!"
             exit 1
           fi
 
-          REPO_INDEX=$(head -n 1 SYNC_REPO.txt | tr -d '\r\n ')
+          REPO_INDEX=$(head -n 1 Config/SYNC_REPO.txt | tr -d '\r\n ')
 
           if [ -z "$REPO_INDEX" ]; then
             echo "::error::SYNC_REPO.txt is empty!"
