@@ -14,7 +14,7 @@ on:
   
 jobs:
   sync:
-    runs-on: xcode-27 
+    runs-on: xcode-27-xlarge
     steps:
       - name: Checkout source repo 1
         uses: actions/checkout@v4
